@@ -11,11 +11,13 @@ app.config.from_mapping(
 app.cli.add_command(db.init)
 app.teardown_appcontext(db.close)
 
-app = Flask(__name__)
-
 @app.route('/')
 def index():
-    return 'Hallo Bundesliga!'
+    return 'Hello, World!'
+
+@app.route('/wow')
+def wow():
+    return 'Wow, this is my second working URL!'
 
 @app.route('/insert/sample')
 def insert_sample():
