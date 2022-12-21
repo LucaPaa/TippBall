@@ -8,5 +8,14 @@ app = Flask(__name__)
 def index():
     return render_template('bundesliga.html')
 
+@app.route('/tipps')
+def tipps():
+    return render_template('tipps.html')
+
+@app.route('/gruppen')
+def gruppen():
+    return render_template('gruppen.html')
+
+
 if __name__ == '__main__':
     app.run(debug = True)
