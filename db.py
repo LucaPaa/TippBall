@@ -2,6 +2,7 @@ import click
 import os
 import sqlite3
 from flask import current_app, g
+from flask_sqlalchemy import SQLAlchemy
 
 def get(pragma_foreign_keys = True):
     if 'db_con' not in g:
