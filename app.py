@@ -1,9 +1,8 @@
 import os
-from flask import Flask, render_template, flash, redirect, url_for, session, logging, request
+from flask import Flask, render_template, redirect, request
 from flask_sqlalchemy import SQLAlchemy
-from wtforms import Form, StringField, TextAreaField, PasswordField, validators
-from passlib.hash import sha256_crypt
-from flask_migrate import Migrate, migrate
+from wtforms import Form, StringField, PasswordField, validators
+from flask_migrate import Migrate
 # import db
 
 app = Flask(__name__)
@@ -20,18 +19,18 @@ db = SQLAlchemy(app)
 
 # Settings for migrations
 migrate = Migrate(app, db)
+#Joni pls explain
 
 # Models
+# Kann ich dies auch in einer anderen .py ansiedeln und wie UND wie update ich die db gescheit ohne immer
+# alles aus dem migrations- und instance ordner zu löschieren
 class Profile(db.Model):
-    # Id : Field which stores unique id for every row in
-    # database table.
-    # first_name: Used to store the first name if the user
-    # last_name: Used to store last name of the user
-    # Age: Used to store the age of the user
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(20), unique=False, nullable=False)
     last_name = db.Column(db.String(20), unique=False, nullable=False)
     age = db.Column(db.Integer, nullable=False)
+    mail = db.Column(db.String(20), nullable=False, unique=True)
+    password = db.Column(db.String(20), nullable=False, unique=False)
  
     # repr method represents how one object of this datatable
     # will look like
@@ -55,11 +54,13 @@ def profile():
     first_name = request.form.get("first_name")
     last_name = request.form.get("last_name")
     age = request.form.get("age")
+    mail = request.form.get("mail")
+    password = request.form.get("password")
  
     # create an object of the Profile class of models
     # and store data as a row in our datatable
-    if first_name != '' and last_name != '' and age is not None:
-        p = Profile(first_name=first_name, last_name=last_name, age=age)
+    if first_name != '' and last_name != '' and age is not None and mail != '' and password != '':
+        p = Profile(first_name=first_name, last_name=last_name, age=age, mail=mail, password=password)
         db.session.add(p)
         db.session.commit()
         return redirect('/profile')
@@ -83,6 +84,7 @@ def tipps():
 def gruppen():
     return render_template('gruppen.html')
 
+# Remnant from a forgotten age
 class RegisterForm(Form):
     name = StringField('Name', [validators.Length(min=1, max=50)])
     username = StringField('Benutzername', [validators.Length(min=6, max=12)])

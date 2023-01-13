@@ -3,14 +3,23 @@
     <title>Add Profiles</title>
  </head>
 {% block body %}
-    <h3>Profile Form</h3>
+    <h3>Registrierung</h3>
     <form action="/add" method="POST">
-        <label>First Name</label>
-        <input type="text" name="first_name" placeholder="first name...">
-        <label>Last Name</label>
-        <input type="text" name= "last_name" placeholder="last name...">
-        <label>Age</label>
-        <input type="number" name="age" placeholder="age..">
-        <button type="submit">Add</button>
+        <label>Email</label>
+        <input type="text" name="mail" placeholder="Email">
+        <p></p>
+        <label>Vorname</label>
+        <input type="text" name="first_name" placeholder="Vorname">
+        <p></p>
+        <label>Nachname</label>
+        <input type="text" name= "last_name" placeholder="Nachname">
+        <p></p>
+        <label>Alter</label>
+        <input type="number" name="age" placeholder="Alter">
+        <p></p>
+        <label>Passwort</label>
+        <input type="password" name="password" placeholder="Passwort">
+        <p></p>
+        <button type="submit">Hinzufügen</button>
      </form>
 {% endblock %}
