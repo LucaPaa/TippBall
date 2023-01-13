@@ -14,14 +14,16 @@
             <table style="width: 100%">
                <thead>
                   <th>Id</th>
-                  <th>First Name</th>
-                  <th>Last Name</th>
-                  <th>Age</th>
-                  <th>#</th>
+                  <th>Email</th>
+                  <th>Vorname</th>
+                  <th>Nachname</th>
+                  <th>Alter</th>
+                  <th>Aktion</th>
                </thead>
                {% for data in profiles %}
                <tbody>
                   <td>{{data.id}}</td>
+                  <td>{{data.mail}}</td>
                   <td>{{data.first_name}}</td>
                   <td>{{data.last_name}}</td>
                   <td>{{data.age}}</td>
