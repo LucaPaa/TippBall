@@ -5,6 +5,8 @@ from wtforms import Form, StringField, PasswordField, validators
 from flask_migrate import Migrate
 # import db
 
+# HOW TO REQUIREMENTS TXT
+
 app = Flask(__name__)
 
 # adding configuration for using a sqlite database
@@ -42,23 +44,15 @@ class Profile(db.Model):
 def add_data():
     return render_template('add_profile.html')
 
-# function to add profiles
+
 @app.route('/add', methods=["POST"])
 def profile():
-     
-    # In this function we will input data from the
-    # form page and store it in our database.
-    # Remember that inside the get the name should
-    # exactly be the same as that in the html
-    # input fields
     first_name = request.form.get("first_name")
     last_name = request.form.get("last_name")
     age = request.form.get("age")
     mail = request.form.get("mail")
     password = request.form.get("password")
  
-    # create an object of the Profile class of models
-    # and store data as a row in our datatable
     if first_name != '' and last_name != '' and age is not None and mail != '' and password != '':
         p = Profile(first_name=first_name, last_name=last_name, age=age, mail=mail, password=password)
         db.session.add(p)
@@ -67,6 +61,7 @@ def profile():
     else:
         return redirect('/profile')
 
+# currently nur amogus
 @app.route('/')
 def index():
     return render_template('bundesliga.html')
@@ -76,10 +71,12 @@ def profil():
     profiles = Profile.query.all()
     return render_template('profile.html', profiles=profiles)
 
+# currently nur amogus
 @app.route('/tipps')
 def tipps():
     return render_template('tipps.html')
 
+# currently nur amogus
 @app.route('/gruppen')
 def gruppen():
     return render_template('gruppen.html')
@@ -105,8 +102,6 @@ def register():
 
 @app.route('/delete/<int:id>')
 def erase(id):
-    # Deletes the data on the basis of unique id and
-    # redirects to home page
     data = Profile.query.get(id)
     db.session.delete(data)
     db.session.commit()
