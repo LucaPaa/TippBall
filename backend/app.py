@@ -1,7 +1,5 @@
 import os
 from flask import Flask, render_template, redirect, request
-from wtforms import Form, StringField, PasswordField, validators
-from flask_migrate import Migrate
 
 from models.models import Profile
 from database.database import engine, Base, SessionLocal
