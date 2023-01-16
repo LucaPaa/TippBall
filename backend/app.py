@@ -1,8 +1,10 @@
+import json
 import os
 from flask import Flask, render_template, redirect, request
 
-from models.models import Profile
+from models.models import Profile, Klubs
 from database.database import engine, Base, SessionLocal
+import requests
 
 app = Flask(__name__)
 
@@ -15,7 +17,6 @@ Base.metadata.create_all(engine)
 @app.route('/add_data')
 def add_data():
     return render_template('add_profile.html')
-
 
 @app.route('/add', methods=["POST"])
 def profile():
@@ -72,6 +73,41 @@ def erase(id: str):
         session.commit()
     return redirect('/profile')
 
+#Creating the table using OpenLigaDB API
 
-if __name__ == '__main__':
-    app.run(debug=True)
+url = "https://api.openligadb.de/getbltable/bl1/2022"
+
+payload={}
+headers = {
+  'Accept': 'text/plain'
+}
+
+response = requests.request("GET", url, headers=headers, data=payload)
+
+#Turn Textfile into json for better accesability
+table = json.loads(response.text)
+
+#get relevant data
+for team in table:
+    name = team['teamName']
+    shorty = team['shortName']
+    image = team['teamIconUrl']
+    points = team['points']
+    goals_against = team['opponentGoals']
+    goals_for = team['goals']
+    matches = team['matches']
+    wins = team['won']
+    losses= team['lost']
+    draws = team['draw']
+    diff = team['goalDiff']
+
+    with SessionLocal() as session:
+        k = Klubs(name=name, name_short=shorty, image=image, points=points, diff=diff,
+                    goals_against=goals_against, goals_for=goals_for, matches=matches, wins=wins,
+                    losses=losses, draws=draws)
+        session.add(k)
+        session.commit()
+
+# if __name__ == '__main__':
+#    app.run(debug=True)
+
