@@ -120,6 +120,17 @@ def tabelle():
     return render_template('tabelle.html', klubs=klubs)
 
 
+url = "https://api.openligadb.de/getcurrentgroup/bl1"
+
+payload={}
+headers = {
+  'Accept': 'text/plain'
+}
+
+response = requests.request("GET", url, headers=headers, data=payload)
+spiel_aktuell = json.loads(response.text)
+spiel_aktuell = spiel_aktuell['groupOrderID']
+
 url = "https://api.openligadb.de/getmatchdata/bl1/2022"
 payload={}
 headers = {
