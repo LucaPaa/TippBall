@@ -21,9 +21,9 @@ class Klubs(Base):
     __tablename__ = "klubs"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(40), unique=True, nullable=False)
-    name_short = Column(String(15), unique=True, nullable=False)
-    image = Column(String(80), unique=True, nullable=False)
+    name = Column(String(40), unique=False, nullable=False)
+    name_short = Column(String(20), unique=False, nullable=False)
+    image = Column(String(200), unique=False, nullable=False)
     points = Column(Integer, unique=False, nullable=False)
     diff = Column(Integer, unique=False, nullable=False)
     goals_for = Column(Integer, unique=False, nullable=False)

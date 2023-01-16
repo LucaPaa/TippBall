@@ -88,6 +88,7 @@ response = requests.request("GET", url, headers=headers, data=payload)
 table = json.loads(response.text)
 
 #get relevant data
+
 for team in table:
     name = team['teamName']
     shorty = team['shortName']
@@ -105,9 +106,19 @@ for team in table:
         k = Klubs(name=name, name_short=shorty, image=image, points=points, diff=diff,
                     goals_against=goals_against, goals_for=goals_for, matches=matches, wins=wins,
                     losses=losses, draws=draws)
-        session.add(k)
-        session.commit()
+        if session.query(Klubs).count()==18:
+             session.flush(k)
+             session.commit()
+        else:
+            session.add(k)
+            session.commit()
 
-# if __name__ == '__main__':
-#    app.run(debug=True)
+@app.route('/tabelle')
+def tabelle():
+    with SessionLocal() as session:
+        klubs = session.query(Klubs).all()
+    return render_template('tabelle.html', klubs=klubs)
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
