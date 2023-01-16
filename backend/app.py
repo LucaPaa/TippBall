@@ -1,9 +1,10 @@
 import json
 import os
 from flask import Flask, render_template, redirect, request
-from functions import spieltage, aktueller, filltable
+from database.functions import spieltage, aktueller, checkSpieltageThread
 from models.models import Profile, Klubs, Spiele
 from database.database import engine, Base, SessionLocal
+from database.initDB import init
 import requests
 
 app = Flask(__name__)
@@ -13,10 +14,13 @@ app.app_context().push()
 # import the database session
 Base.metadata.create_all(engine)
 
+saison = 2022
+
 
 @app.route('/add_data')
 def add_data():
     return render_template('add_profile.html')
+
 
 @app.route('/add', methods=["POST"])
 def profile():
@@ -76,14 +80,23 @@ def erase(id: str):
 
 @app.route('/tabelle')
 def tabelle():
-    filltable()
     with SessionLocal() as session:
         klubs = session.query(Klubs).all()
     return render_template('tabelle.html', klubs=klubs)
 
 
-#spieltage()
-
 if __name__ == '__main__':
-   app.run(debug=True)
-
+    # check if env vraibles are set
+    # TODO: automatically set the correct one (check time.Now for august)
+    if os.environ.get('TIPPBALL_SAISON') is None:
+        print("TIPPBALL_SAISON is not set. Using 2022")
+    else:
+        saison = os.environ.get('TIPPBALL_SAISON')
+    # init the database
+    init()
+    # start a background task to update the database (spieltage)
+    import threading
+    t = threading.Thread(target=checkSpieltageThread)
+    t.start()
+    # start the webserver
+    app.run(debug=True)
