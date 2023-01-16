@@ -68,14 +68,12 @@ def filltable():
     headers = {
     'Accept': 'text/plain'
     }
-
     response_1 = requests.request("GET", url, headers=headers, data=payload)
 
     #Turn Textfile into json for better accesability
     table = json.loads(response_1.text)
 
     #get relevant data
-
     for team in table:
         name = team['teamName']
         shorty = team['shortName']
