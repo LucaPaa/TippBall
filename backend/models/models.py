@@ -1,5 +1,6 @@
 from database.database import Base
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import declarative_base, relationship
 
 
 class Profile(Base):
@@ -33,6 +34,14 @@ class Klubs(Base):
     draws = Column(Integer, unique=False, nullable=False)
     losses = Column(Integer, unique=False, nullable=False)
 
-    
+class Spiele(Base):
+    __tablename__="spiele"
 
-
+    id = Column(Integer, primary_key=True)
+    spieltag = Column(Integer, unique=False, nullable=False)
+    heim_team = Column(String(20), unique=False, nullable=False)
+    gast_team = Column(String(20), unique=False, nullable=False)
+    heim_tore = Column(Integer, unique=False, nullable=True)
+    gast_tore = Column(Integer, unique=False, nullable=True)
+    finished = Column(Integer, unique=False, nullable=False)
+    date = Column(String(40), unique=False, nullable=False)

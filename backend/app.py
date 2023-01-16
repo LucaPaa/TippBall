@@ -2,7 +2,7 @@ import json
 import os
 from flask import Flask, render_template, redirect, request
 
-from models.models import Profile, Klubs
+from models.models import Profile, Klubs, Spiele
 from database.database import engine, Base, SessionLocal
 import requests
 
@@ -82,10 +82,10 @@ headers = {
   'Accept': 'text/plain'
 }
 
-response = requests.request("GET", url, headers=headers, data=payload)
+response_1 = requests.request("GET", url, headers=headers, data=payload)
 
 #Turn Textfile into json for better accesability
-table = json.loads(response.text)
+table = json.loads(response_1.text)
 
 #get relevant data
 
@@ -119,6 +119,45 @@ def tabelle():
         klubs = session.query(Klubs).all()
     return render_template('tabelle.html', klubs=klubs)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+
+url = "https://api.openligadb.de/getmatchdata/bl1/2022"
+payload={}
+headers = {
+  'Accept': 'text/plain'
+}
+response_2 = requests.request("GET", url, headers=headers, data=payload)
+#Turn Textfile into json for better accesability
+games = json.loads(response_2.text)
+
+for game in games:
+    spieltag = game['group']
+    spieltag = spieltag['groupOrderID']
+    heim_team = game['team1']
+    heim_team = heim_team['shortName']
+    gast_team = game['team2']
+    gast_team = gast_team['shortName']
+    finished = game['matchIsFinished']
+    date = game['matchDateTime']
+    try:
+        tore = game['matchResults']
+        tore = tore[0]
+        heim_tore = tore['pointsTeam1']
+        gast_tore = tore['pointsTeam2']
+    except IndexError:
+        heim_tore = None
+        gast_tore = None
+    
+
+    with SessionLocal() as session:  
+        g = Spiele(spieltag=spieltag, heim_team=heim_team, gast_team=gast_team,
+                    heim_tore=heim_tore, gast_tore=gast_tore, finished=finished, date=date)
+        if Spiele.id != 9*34 :
+            session.add(g)
+            session.commit()
+        else:
+            session.flush(g)
+            session.commit()
+
+#if __name__ == '__main__':
+#   app.run(debug=True)
 
