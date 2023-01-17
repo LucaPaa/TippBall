@@ -64,9 +64,12 @@ def tipps():
 # currently nur amogus
 
 
-@app.route('/gruppen')
-def gruppen():
-    return render_template('gruppen.html')
+@app.route('/partien')
+def partien():
+    with SessionLocal() as session:
+        spiele = session.query(Spiele).filter(Spiele.spieltag == aktueller()-1)
+        print(spiele)
+    return render_template('partien.html', spiele=spiele)
 
 
 @app.route('/delete/<int:id>')
@@ -88,15 +91,23 @@ def tabelle():
 if __name__ == '__main__':
     # check if env vraibles are set
     # TODO: automatically set the correct one (check time.Now for august)
-    if os.environ.get('TIPPBALL_SAISON') is None:
-        print("TIPPBALL_SAISON is not set. Using 2022")
-    else:
-        saison = os.environ.get('TIPPBALL_SAISON')
+
+
+    #if os.environ.get('TIPPBALL_SAISON') is None:
+    #    print("TIPPBALL_SAISON is not set. Using 2022")
+    #else:
+    #    saison = os.environ.get('TIPPBALL_SAISON')
+
     # init the database
+
     init()
+
     # start a background task to update the database (spieltage)
-    import threading
-    t = threading.Thread(target=checkSpieltageThread)
-    t.start()
+
+    #import threading
+    #t = threading.Thread(target=checkSpieltageThread)
+    #t.start()
+
     # start the webserver
+
     app.run(debug=True)

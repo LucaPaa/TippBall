@@ -1,0 +1,35 @@
+{% extends 'layouts.html' %}
+
+{% block body %}
+<style>
+    table, th, td {
+      border-collapse: collapse;
+      table-layout: fixed;
+      padding: 10px;
+    }
+
+</style>
+
+<h1>Begegnungen (letzter Spieltag)</h1>
+<div class="jumbotron">
+    <br>
+    <table>
+       <thead>
+          <th>Team 1</th>
+          <th>H</th>
+          <th></th>
+          <th>G</th>
+          <th>Team 2</th>
+       </thead>
+       {% for data in spiele %}
+        <tbody>
+            <td>{{data.heim_team}}</td>
+            <td>{{data.heim_tore}}</td>
+            <td>:</td>
+            <td>{{data.gast_tore}}</td>
+            <td>{{data.gast_team}}</td>
+        </tbody>
+        {% endfor%}
+     </table>
+</div>
+{% endblock %}
