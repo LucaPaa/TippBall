@@ -1,11 +1,9 @@
-import json
-import os
 from flask import Flask, render_template, redirect, request
 from database.functions import spieltage, aktueller, checkSpieltageThread
 from models.models import Profile, Klubs, Spiele
 from database.database import engine, Base, SessionLocal
 from database.initDB import init
-import requests
+
 
 app = Flask(__name__)
 
