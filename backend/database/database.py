@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 # initialize sqlite connection url
 SQLALCHEMY_DATABASE_URL = "sqlite:///./instance/bundesliga.db"
 # echo logs the sql statements to console; set to false in production
-engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True)
+engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=False)
 
 # create a session to be used by other packages
 SessionLocal = sessionmaker(engine)

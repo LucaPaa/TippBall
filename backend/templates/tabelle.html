@@ -1,0 +1,37 @@
+{% extends 'layouts.html' %}
+<head></head>
+
+{% block body %}
+    <div class="jumbotron">
+            <h1>Bundesliga Tabelle</h1>
+            <br>
+            <table style="width: 100%">
+               <thead>
+                  <th></th>
+                  <th>Team</th>
+                  <th>S</th>
+                  <th>N</th>
+                  <th>U</th>
+                  <th>TD</th>
+                  <th>T</th>
+                  <th>GT</th>
+                  <th>P</th>
+               </thead>
+               {% for data in klubs %}
+               <tbody>
+                  <td><img src={{data.image}} width="25" height="25"></td>
+                  <td><b>{{data.name_short}}</b></td>
+                  <td>{{data.wins}}</td>
+                  <td>{{data.losses}}</td>
+                  <td>{{data.draws}}</td>
+                  <td>{{data.diff}}</td>
+                  <td>{{data.goals_for}}</td>
+                  <td>{{data.goals_against}}</td>
+                  <td><b>{{data.points}}</b></td>
+                </tbody>
+                {% endfor%}
+             </table>
+    </div>
+{% endblock %}
+
+
