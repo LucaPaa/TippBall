@@ -2,15 +2,50 @@
 
 {% block body %}
 
-<h1>Registrierung</h1>
+<style>
+    form {
+        background-color: midnightblue;
+        color: white;
+        width: 300px;
+        height: fit-contentS;
+        align-items: center;
+    }
 
-<form method="POST" action="">
-    {{ form.hidden_tag() }}
-    {{ form.username }}
-    {{ form.password }}
-    {{ form.submit }}
-</form>
+    input[type=text]{
+        color: midnightblue;
+        background-color: white;
+        border: 100% midnightblue;
+        padding: 5px;
+        margin-bottom: 20px;
+    }
 
-<a href="{{ url_for('login') }}">Bereits registriert?</a><br>
+    input[type=password]{
+        color: midnightblue;
+        background-color: white;
+        border: 100% midnightblue;
+        padding: 5px;
+        margin-bottom: 20px;
+
+
+    }
+
+    input[type=submit] {
+        color: midnightblue;
+        background-color: white;
+        margin-top: 20px;
+        
+    }
+</style>
+<div class="container">
+    <form method="POST" action="">
+        <h1>Registrierung</h1>
+        {{ form.hidden_tag() }} <br>
+        {{ form.username }} <br>
+        {{ form.password }} <br>
+        {{ form.submit }} <br>
+    </form>
+    <br>
+    <a href="{{ url_for('login') }}">Bereits registriert?</a><br>
+</div>
 
 {% endblock %}
