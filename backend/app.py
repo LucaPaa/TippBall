@@ -1,83 +1,123 @@
 from flask import Flask, render_template, redirect, request
 from database.functions import spieltage, aktueller, checkSpieltageThread
-from models.models import Profile, Klubs, Spiele
+from models.models import Klubs, Spiele, Register
 from database.database import engine, Base, SessionLocal
 from database.initDB import init
-
+from flask_login import login_user, LoginManager, login_required, logout_user, current_user
+from flask_bcrypt import Bcrypt
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import InputRequired, Length, ValidationError
 
 app = Flask(__name__)
 
 app.app_context().push()
+app.secret_key = "thisissecret"
+
+bcrypt = Bcrypt(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    with SessionLocal() as session:
+        return session.query(Register).get(int(user_id))
 
 # import the database session
 Base.metadata.create_all(engine)
 
 saison = 2022
 
+class RegisterForm(FlaskForm):
+    username = StringField(validators=[
+                           InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Benutzername"})
 
-@app.route('/add_data')
-def add_data():
-    return render_template('add_profile.html')
+    password = PasswordField(validators=[
+                             InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Passwort"})
 
+    submit = SubmitField('Registrieren')
 
-@app.route('/add', methods=["POST"])
-def profile():
-    first_name = request.form.get("first_name")
-    last_name = request.form.get("last_name")
-    age = request.form.get("age")
-    mail = request.form.get("mail")
-    password = request.form.get("password")
-
-    if first_name != '' and last_name != '' and age is not None and mail != '' and password != '':
+    def validate_username(self, username):
         with SessionLocal() as session:
-            p = Profile(first_name=first_name, last_name=last_name,
-                        age=age, mail=mail, password=password)
-            session.add(p)
-            session.commit()
-        return redirect('/profile')
-    else:
-        return redirect('/profile')
+            existing_user_username = session.query(Register).filter_by(
+                username=username.data).first()
+            if existing_user_username:
+                raise ValidationError('Der Benutzername existiert bereits.')
 
-# currently nur amogus
+class LoginForm(FlaskForm):
+    username = StringField(validators=[
+                           InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Benutzername"})
 
+    password = PasswordField(validators=[
+                             InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Passwort"})
 
-@app.route('/')
+    submit = SubmitField('Login')
+
+#Start of routing
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    if current_user.is_authenticated:
+        return render_template('bundesliga.html')
+    else: 
+        return render_template('index.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+
+    if form.validate_on_submit():
+        with SessionLocal() as session: 
+            hashed_password = bcrypt.generate_password_hash(form.password.data)
+            new_user = Register(username=form.username.data, password=hashed_password)
+            session.add(new_user)
+            session.commit()
+            return redirect('/login')
+
+    return render_template('register.html', form=form)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        with SessionLocal() as session:
+            user = session.query(Register).filter_by(username=form.username.data).first()
+            if user:
+                if bcrypt.check_password_hash(user.password, form.password.data):
+                    login_user(user)
+                    return redirect('/start')
+    return render_template('login.html', form=form)
+
+@app.route('/logout', methods=['GET', 'POST'])
+@login_required
+def logout():
+    logout_user()
+    return redirect('/login')
+            
+
+@app.route('/start')
+@login_required
+def start():
     return render_template('bundesliga.html')
 
 
-@app.route('/profile')
-def profil():
-    with SessionLocal() as session:
-        profiles = session.query(Profile).all()
-    return render_template('profile.html', profiles=profiles)
-
 # currently nur amogus
-
-
 @app.route('/tipps')
 def tipps():
     return render_template('tipps.html')
 
+@app.route('/score')
+def score():
+    return render_template('score.html')
+
 # currently nur amogus
-
-
 @app.route('/partien')
 def partien():
     with SessionLocal() as session:
         spiele = session.query(Spiele).filter(Spiele.spieltag == aktueller()-1)
         print(spiele)
     return render_template('partien.html', spiele=spiele)
-
-
-@app.route('/delete/<int:id>')
-def erase(id: str):
-    with SessionLocal() as session:
-        data = session.query(Profile).filter_by(id=id).first()
-        session.delete(data)
-        session.commit()
-    return redirect('/profile')
-
 
 @app.route('/tabelle')
 def tabelle():

@@ -2,7 +2,7 @@
 import json
 import requests
 from database.database import engine, Base, SessionLocal
-from models.models import Profile, Klubs, Spiele
+from models.models import Klubs, Spiele
 
 
 def spieltage():
