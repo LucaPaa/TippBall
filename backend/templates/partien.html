@@ -20,14 +20,24 @@
           <th></th>
           <th>G</th>
           <th>Team 2</th>
+          <th>Anstoß</th>
        </thead>
        {% for data in spiele %}
         <tbody>
             <td>{{data.heim_team}}</td>
-            <td>{{data.heim_tore}}</td>
+            {% if data.heim_tore != None %}
+                <td>{{data.heim_tore}}</td>
+            {% else %}
+                <td>...</td>
+            {% endif %}
             <td>:</td>
-            <td>{{data.gast_tore}}</td>
+            {% if data.gast_tore != None%}
+                <td>{{data.gast_tore}}</td>
+            {% else %}
+                <td>...</td>
+            {% endif %}
             <td>{{data.gast_team}}</td>
+            <td>{{data.date}}</td>
         </tbody>
         {% endfor%}
      </table>

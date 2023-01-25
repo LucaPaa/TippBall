@@ -73,12 +73,25 @@ def getSpieltagResults(spieltag):
 
     # update the db with the results
     for game in spieltagresults:
-        # ToDo: Luca will write a function that takes a game in json format and returns the models.Spiele object
-        # game = jsonToSpiele(game)
-        # session.add(game)
-        # session.commit()
-        pass
+        finished = game['matchIsFinished']
+        spieltag = game['group']
+        spieltag = spieltag['groupOrderID']
 
+        try:
+            tore = game['matchResults']
+            tore = tore[0]
+            heim_tore = tore['pointsTeam1']
+            gast_tore = tore['pointsTeam2']
+        except IndexError:
+            heim_tore = None
+            gast_tore = None    
+        
+        with SessionLocal() as session:
+            g = Spiele(spieltag=spieltag, heim_tore=heim_tore, gast_tore=gast_tore, finished=finished)
+            session.flush(g)
+            session.commit()
+
+    return spieltag
 
 def klubs():
     # Filling the table using OpenLigaDB API

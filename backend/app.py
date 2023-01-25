@@ -1,12 +1,12 @@
 from flask import Flask, render_template, redirect, request
-from database.functions import spieltage, aktueller, checkSpieltageThread
+from database.functions import spieltage, aktueller, checkSpieltageThread, getSpieltagResults
 from models.models import Klubs, Spiele, Register
 from database.database import engine, Base, SessionLocal
 from database.initDB import init
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, SelectField
 from wtforms.validators import InputRequired, Length, ValidationError
 
 app = Flask(__name__)
@@ -111,13 +111,22 @@ def tipps():
 def score():
     return render_template('score.html')
 
+
+
 # currently nur amogus
 @app.route('/partien')
 def partien():
     with SessionLocal() as session:
-        spiele = session.query(Spiele).filter(Spiele.spieltag == aktueller()-1)
+        spiele = session.query(Spiele).filter(Spiele.spieltag == aktueller())
         print(spiele)
     return render_template('partien.html', spiele=spiele)
+
+@app.route('/partien/<id>')
+def partien_choice(id):
+    with SessionLocal() as session:
+        spiele = session.query(Spiele).filter(Spiele.spieltag == id)
+        print(spiele)
+    return render_template('partien.html', spiele=spiele)    
 
 @app.route('/tabelle')
 def tabelle():
@@ -147,5 +156,5 @@ if __name__ == '__main__':
     #t.start()
 
     # start the webserver
-
     app.run(debug=True)
+    
