@@ -123,15 +123,16 @@ def partien():
         # we do a little bit of hard-coding --> tb optimize
         form.spieltage.choices = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34]
         spiele = session.query(Spiele).filter(Spiele.spieltag == aktueller())
-
     if request.method == 'POST':
         path = '/partien/{}'.format(form.spieltage.data)
         return redirect(path)
-    return render_template('partien.html', spiele=spiele, form=form)
+    tag = aktueller()
+    return render_template('partien.html', spiele=spiele, form=form, tag=tag)
 
 @app.route('/partien/<id>', methods=['GET', 'POST'])
 def partien_choice(id):
     form = SelectForm()
+    tag = id
     with SessionLocal() as session:
         # we do a little bit of hard-coding --> tb optimize
         form.spieltage.choices = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34]
@@ -140,7 +141,7 @@ def partien_choice(id):
     if request.method == 'POST':
         path = '/partien/{}'.format(form.spieltage.data)
         return redirect(path)
-    return render_template('partien.html', spiele=spiele, form=form)    
+    return render_template('partien.html', spiele=spiele, form=form, tag=tag)    
 
 @app.route('/tabelle')
 def tabelle():
