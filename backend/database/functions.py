@@ -70,8 +70,10 @@ def getSpieltagResults(spieltag):
 
     response = requests.request("GET", url, headers=headers, data={})
     spieltagresults = json.loads(response.text)
+    i = 1
 
     # update the db with the results
+    # chose a kinda sloppy/sussy fix has to be optimized in the future
     for game in spieltagresults:
         finished = game['matchIsFinished']
         spieltag = game['group']
@@ -87,9 +89,14 @@ def getSpieltagResults(spieltag):
             gast_tore = None    
         
         with SessionLocal() as session:
-            g = Spiele(spieltag=spieltag, heim_tore=heim_tore, gast_tore=gast_tore, finished=finished)
-            session.flush(g)
+            #games are easily countable --> formula to get the games of the current match day
+            # works tested 25.01.2023 Mainz-BVB
+            spiel = session.query(Spiele).get((aktueller()-1)*9+i)
+            spiel.finished = finished
+            spiel.heim_tore = heim_tore
+            spiel.gast_tore = gast_tore
             session.commit()
+            i = i + 1
 
     return spieltag
 
@@ -120,16 +127,21 @@ def klubs():
         draws = team['draw']
         diff = team['goalDiff']
 
+
+        #keeping table updated and in correct order with delete --> restore
+        #prefer updating, need to figure out how to order in html/css
         with SessionLocal() as session:
             k = Klubs(name=name, name_short=shorty, image=image, points=points, diff=diff,
                       goals_against=goals_against, goals_for=goals_for, matches=matches, wins=wins,
                       losses=losses, draws=draws)
             if session.query(Klubs).count() == 18:
-                session.flush(k)
+                session.query(Klubs).delete()
+                session.add(k)
                 session.commit()
             else:
                 session.add(k)
                 session.commit()
+            
 
 
 def checkNewResultsSpieltag():
