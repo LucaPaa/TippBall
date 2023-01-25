@@ -6,7 +6,7 @@ from database.initDB import init
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, SelectField
 from wtforms.validators import InputRequired, Length, ValidationError
 
 app = Flask(__name__)
@@ -30,9 +30,8 @@ Base.metadata.create_all(engine)
 
 saison = 2022
 
-class SiteForm(FlaskForm):
-    weiter = SubmitField("Nächster Spieltag")
-    zurück = SubmitField("Letzter Spieltag")
+class SelectForm(FlaskForm):
+    spieltage = SelectField('spieltag', choices=[])
 
 class RegisterForm(FlaskForm):
     username = StringField(validators=[
@@ -117,20 +116,31 @@ def score():
 
 
 
-# currently nur amogus
-@app.route('/partien')
+@app.route('/partien', methods= ['GET', 'POST'])
 def partien():
-        with SessionLocal() as session:
-            spiele = session.query(Spiele).filter(Spiele.spieltag == aktueller())
-            print(spiele)
-        return render_template('partien.html', spiele=spiele)
-
-@app.route('/partien/<id>')
-def partien_choice(id):
+    form = SelectForm()
     with SessionLocal() as session:
+        # we do a little bit of hard-coding --> tb optimize
+        form.spieltage.choices = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34]
+        spiele = session.query(Spiele).filter(Spiele.spieltag == aktueller())
+
+    if request.method == 'POST':
+        path = '/partien/{}'.format(form.spieltage.data)
+        return redirect(path)
+    return render_template('partien.html', spiele=spiele, form=form)
+
+@app.route('/partien/<id>', methods=['GET', 'POST'])
+def partien_choice(id):
+    form = SelectForm()
+    with SessionLocal() as session:
+        # we do a little bit of hard-coding --> tb optimize
+        form.spieltage.choices = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34]
         spiele = session.query(Spiele).filter(Spiele.spieltag == id)
-        print(spiele)
-    return render_template('partien.html', spiele=spiele)    
+    
+    if request.method == 'POST':
+        path = '/partien/{}'.format(form.spieltage.data)
+        return redirect(path)
+    return render_template('partien.html', spiele=spiele, form=form)    
 
 @app.route('/tabelle')
 def tabelle():
