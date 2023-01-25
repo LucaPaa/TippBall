@@ -6,7 +6,7 @@ from database.initDB import init
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 
 app = Flask(__name__)
@@ -29,6 +29,10 @@ def load_user(user_id):
 Base.metadata.create_all(engine)
 
 saison = 2022
+
+class SiteForm(FlaskForm):
+    weiter = SubmitField("Nächster Spieltag")
+    zurück = SubmitField("Letzter Spieltag")
 
 class RegisterForm(FlaskForm):
     username = StringField(validators=[
@@ -116,10 +120,10 @@ def score():
 # currently nur amogus
 @app.route('/partien')
 def partien():
-    with SessionLocal() as session:
-        spiele = session.query(Spiele).filter(Spiele.spieltag == aktueller())
-        print(spiele)
-    return render_template('partien.html', spiele=spiele)
+        with SessionLocal() as session:
+            spiele = session.query(Spiele).filter(Spiele.spieltag == aktueller())
+            print(spiele)
+        return render_template('partien.html', spiele=spiele)
 
 @app.route('/partien/<id>')
 def partien_choice(id):
