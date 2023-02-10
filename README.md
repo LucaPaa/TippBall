@@ -28,4 +28,17 @@ python app.py
 python 3 app.py
 ```
 
+## Was wir während dem Projekt gelernt haben
+
+* Verwenden von Sessions
+* Verknüpfen und Auswerten einer API
+* Grundlegende Kenntnise in Python
+* Anbindung von Datenbanken
+* Projektplanung/Versionierung mit Github
+
+## Was es noch zu lernen gibt
+
+Grundsätzlich ist alles was an unserem Projekt noch ausbaufähig ist und uns aufgefallen ist mit Kommentaren markiert. Natürlich
+wird das nicht alles sein und wir sind trotzdem froh einiges mitgenommen zu haben :)
+
 
