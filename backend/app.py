@@ -191,5 +191,5 @@ if __name__ == '__main__':
     checkUpdate()
 
     # Starten der Anwendung setz "debug=True" um im Debugger-Modus zu starten
-    app.run(debug=True)
+    app.run(debug=False)
     
