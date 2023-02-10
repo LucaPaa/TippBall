@@ -6,9 +6,10 @@
     <h1 class="display-4">Herzlich Willkommen zum Tippspiel ohne ärgerliche Werbung</h1>
     <p class="lead">- Verwandeln Sie Ihr Wohnzimmer in eine Sportarena und genießen Sie Tippspiel ohne Werbung - </p>
     <hr class="my-4">
-    <p>Hallo {{user.username}}</p>
-    <a href='/logout'>Ausloggen!</a>
-  </div>
+    <p>Hallo {{user.username}}, Sie haben zurzeit {{user.points}} Punkte, strengen Sie sich noch mehr an!</p>
+    <a href='/logout'>
+      <img src =..\static\icons\exit.jpg width="15%" height="15%">
+    </a>
 </div>
 
 {% endblock %}
