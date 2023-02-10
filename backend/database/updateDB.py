@@ -1,18 +1,3 @@
-# import schedule
-# import time
-
-# def job():
-#  spieltage()
-#     return
-
-
-# schedule.every().minute.do(job)
-# # schedule.every().day.at("22:00").do(job)
-
-# while True:
-#     schedule.run_pending()
-#     time.sleep(60)  # wait one minute
-
 from functions import aktueller
 from database.database import SessionLocal
 from models.models import Spiele

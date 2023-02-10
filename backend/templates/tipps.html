@@ -1,10 +1,203 @@
 {% extends 'layouts.html' %}
 
 {% block body %}
+
+<style>
+    table, th, td {
+      border-collapse: collapse;
+      table-layout: fixed;
+      padding: 10px;
+    }
+
+</style>
+
 <h1>Deine Tipps</h1>
-<p>It's important to note that Reds commit nearly 52% of all the murders in Among Us,
-    which is astounding when you take into consideration the fact that they make up 12-13% of the population.
-    It gets even more astounding when you start considering the fact the bulk of Reds committing these murders are probably
-    ages 8-18 which is probably around an estimated 6-7% of the population that means that around 7% of Among Us Players are committing around 50% of the murders.
-</p>
+<p>Hier kannst du die Spiele des kommenden Spieltags tippen oder die Tipps des aktuellen Spieltags einsehen!</p>
+
+<div class="jumbotron">
+    <br>
+    {% set h = [] %}
+    {% set g = [] %}
+    {% set start = [] %}
+
+    {% for data in spiele %}
+        {% set h = h.append(data.heim_team) %}
+    {% endfor %}
+    {% for data in spiele %}
+        {% set g = g.append(data.gast_team) %}
+    {% endfor %}
+    {% for data in spiele %}
+        {% set start = start.append(data.gast_team) %}
+    {% endfor %}
+
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <table>
+            <thead>
+                <th>Heim</th>        
+                <th>Tipp Heim</th>        
+                <th></th>        
+                <th>Tipp Gast</th>        
+                <th>Gast</th>        
+            </thead>
+            <tbody>
+                {% if start[0] != 1 %}
+                    <tr>
+                        <td>{{ h[0] }}</td>
+                        <td>{{ form.h0 }}</td>
+                        <td>:</td>
+                        <td>{{ form.g0 }}</td>
+                        <td>{{ g[0] }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>{{ h[0] }}</td>
+                        <td>{{ form.h0(disabled=True, value=-1) }}</td>
+                        <td>:</td>
+                        <td>{{ form.g0(disabled=True, value=-1) }}</td>
+                        <td>{{ g[0] }}</td>
+                    </tr>
+                {% endif %}
+                {% if start[1] != 1 %}                
+                    <tr>
+                        <td>{{ h[1] }}</td>
+                        <td>{{ form.h1 }}</td>
+                        <td>:</td>
+                        <td>{{ form.g1 }}</td>
+                        <td>{{ g[1] }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>{{ h[1] }}</td>
+                        <td>{{ form.h1(disabled=True, value=-1) }}</td>
+                        <td>:</td>
+                        <td>{{ form.g1(disabled=True, value=-1) }}</td>
+                        <td>{{ g[1] }}</td>
+                    </tr>
+                {% endif %}
+                {% if start[2] != 1 %}                
+                    <tr>
+                        <td>{{ h[2] }}</td>
+                        <td>{{ form.h2 }}</td>
+                        <td>:</td>
+                        <td>{{ form.g2 }}</td>
+                        <td>{{ g[2] }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>{{ h[2] }}</td>
+                        <td>{{ form.h2(disabled=True, value=-1) }}</td>
+                        <td>:</td>
+                        <td>{{ form.g2(disabled=True, value=-1) }}</td>
+                        <td>{{ g[2] }}</td>
+                    </tr>
+                {% endif %}
+                {% if start[3] != 1 %}                
+                    <tr>
+                        <td>{{ h[3] }}</td>
+                        <td>{{ form.h3 }}</td>
+                        <td>:</td>
+                        <td>{{ form.g3 }}</td>
+                        <td>{{ g[3] }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>{{ h[3] }}</td>
+                        <td>{{ form.h3(disabled=True, value=-1) }}</td>
+                        <td>:</td>
+                        <td>{{ form.g3(disabled=True, value=-1) }}</td>
+                        <td>{{ g[3] }}</td>
+                    </tr>
+                {% endif %}
+                {% if start[4] != 1 %}                
+                    <tr>
+                        <td>{{ h[4] }}</td>
+                        <td>{{ form.h4 }}</td>
+                        <td>:</td>
+                        <td>{{ form.g4 }}</td>
+                        <td>{{ g[4] }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>{{ h[4] }}</td>
+                        <td>{{ form.h4(disabled=True, value=-1) }}</td>
+                        <td>:</td>
+                        <td>{{ form.g4(disabled=True, value=-1) }}</td>
+                        <td>{{ g[4] }}</td>
+                    </tr>
+                {% endif %}
+                {% if start[5] != 1 %}                
+                    <tr>
+                        <td>{{ h[5] }}</td>
+                        <td>{{ form.h5 }}</td>
+                        <td>:</td>
+                        <td>{{ form.g5 }}</td>
+                        <td>{{ g[5] }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>{{ h[5] }}</td>
+                        <td>{{ form.h5(disabled=True, value=-1) }}</td>
+                        <td>:</td>
+                        <td>{{ form.g5(disabled=True, value=-1) }}</td>
+                        <td>{{ g[5] }}</td>
+                    </tr>
+                {% endif %}
+                {% if start[6] != 1 %}                
+                    <tr>
+                        <td>{{ h[6] }}</td>
+                        <td>{{ form.h6 }}</td>
+                        <td>:</td>
+                        <td>{{ form.g6 }}</td>
+                        <td>{{ g[6] }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>{{ h[6] }}</td>
+                        <td>{{ form.h6(disabled=True, value=-1) }}</td>
+                        <td>:</td>
+                        <td>{{ form.g6(disabled=True, value=-1) }}</td>
+                        <td>{{ g[6] }}</td>
+                    </tr>
+                {% endif %}
+                {% if start[7] != 1 %}                
+                    <tr>
+                        <td>{{ h[7] }}</td>
+                        <td>{{ form.h7 }}</td>
+                        <td>:</td>
+                        <td>{{ form.g7 }}</td>
+                        <td>{{ g[7] }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>{{ h[7] }}</td>
+                        <td>{{ form.h7(disabled=True, value=-1) }}</td>
+                        <td>:</td>
+                        <td>{{ form.g7(disabled=True, value=-1) }}</td>
+                        <td>{{ g[7] }}</td>
+                    </tr>
+                {% endif %}
+                {% if start[8] != 1 %}                
+                    <tr>
+                        <td>{{ h[8] }}</td>
+                        <td>{{ form.h8 }}</td>
+                        <td>:</td>
+                        <td>{{ form.g8 }}</td>
+                        <td>{{ g[8] }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>{{ h[8] }}</td>
+                        <td>{{ form.h8(disabled=True, value=-1) }}</td>
+                        <td>:</td>
+                        <td>{{ form.g8(disabled=True, value=-1) }}</td>
+                        <td>{{ g[8] }}</td>
+                    </tr>
+                {% endif %}                
+            </tbody>
+        </table>
+        <br>
+        {{form.submit}}
+    </form>
+</div>
 {% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'layouts.html' %}
+
+{% block body %}
+<style>
+    table, th, td {
+      border-collapse: collapse;
+      table-layout: fixed;
+      padding: 10px;
+    }
+
+</style>
+
+{% set h = [] %}
+{% set g = [] %}
+{% set i = [] %}
+{% set j = [] %}
+
+{% for data in spiele %}
+    {% set h = h.append(data.heim_team) %}
+{% endfor %}
+{% for data in spiele %}
+    {% set g = g.append(data.gast_team) %}
+{% endfor %}
+
+{% for data in tipps %}
+    {% set i = i.append(data.heim_tore) %}
+{% endfor %}
+{% for data in tipps %}
+    {% set j = j.append(data.gast_tore) %}
+{% endfor %}
+
+<h1>Deine aktuellen Tipps</h1>
+<div class="jumbotron">
+    <br>
+    <table>
+        <thead>
+            <th>Heim</th>        
+            <th>Tipp Heim</th>        
+            <th></th>        
+            <th>Tipp Gast</th>        
+            <th>Gast</th>        
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ h[0] }}</td>
+                <td>{{ i[0] }}</td>
+                <td>:</td>
+                <td>{{ j[0] }}</td>
+                <td>{{ g[0] }}</td>
+            </tr>                <tr>
+                <td>{{ h[1] }}</td>
+                <td>{{ i[1]}}</td>
+                <td>:</td>
+                <td>{{ j[1] }}</td>
+                <td>{{ g[1] }}</td>
+            </tr>                <tr>
+                <td>{{ h[2] }}</td>
+                <td>{{ i[2] }}</td>
+                <td>:</td>
+                <td>{{ j[2] }}</td>
+                <td>{{ g[2] }}</td>
+            </tr>                <tr>
+                <td>{{ h[3] }}</td>
+                <td>{{ i[3] }}</td>
+                <td>:</td>
+                <td>{{ j[3] }}</td>
+                <td>{{ g[3] }}</td>
+            </tr>                <tr>
+                <td>{{ h[4] }}</td>
+                <td>{{ i[4] }}</td>
+                <td>:</td>
+                <td>{{ j[4]}}</td>
+                <td>{{ g[4] }}</td>
+            </tr>                <tr>
+                <td>{{ h[5] }}</td>
+                <td>{{ i[5] }}</td>
+                <td>:</td>
+                <td>{{ j[5] }}</td>
+                <td>{{ g[5] }}</td>
+            </tr>                <tr>
+                <td>{{ h[6] }}</td>
+                <td>{{ i[6] }}</td>
+                <td>:</td>
+                <td>{{ j[6] }}</td>
+                <td>{{ g[6] }}</td>
+            </tr>                <tr>
+                <td>{{ h[7] }}</td>
+                <td>{{ i[7] }}</td>
+                <td>:</td>
+                <td>{{ j[7] }}</td>
+                <td>{{ g[7] }}</td>
+            </tr>                <tr>
+                <td>{{ h[8] }}</td>
+                <td>{{ i[8] }}</td>
+                <td>:</td>
+                <td>{{ j[8] }}</td>
+                <td>{{ g[8] }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

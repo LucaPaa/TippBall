@@ -2,9 +2,9 @@
 import json
 import requests
 from database.database import engine, Base, SessionLocal
-from models.models import Klubs, Spiele
+from models.models import Klubs, Spiele, Update, Tipps, Register
 
-
+# generates game schedule
 def spieltage():
     url = "https://api.openligadb.de/getmatchdata/bl1/2022"
     payload = {}
@@ -12,9 +12,9 @@ def spieltage():
         'Accept': 'application/json'
     }
     response = requests.request("GET", url, headers=headers, data=payload)
-    # Turn Textfile into json for better accesability
     games = json.loads(response.text)
 
+    #recieve relevant data to generate all games of the 2022/23 bundesliga-season
     for game in games:
         spieltag = game['group']
         spieltag = spieltag['groupOrderID']
@@ -24,6 +24,9 @@ def spieltage():
         gast_team = gast_team['shortName']
         finished = game['matchIsFinished']
         date = game['matchDateTime']
+
+    # throws an exception when goal colums are empty if database is initialized when games already have been played
+    # not finished games will recieve "None" goals
         try:
             tore = game['matchResults']
             tore = tore[0]
@@ -40,8 +43,9 @@ def spieltage():
             session.commit()
 
 # ToDo: check if aktueller returns current or upcoming spieltag and when it switches to the next one
+# Edit: aktueller switches halfway between matchdays
 
-
+# returns the current matchday --> changes between weeks, e.g. on a regular schedule on wednesday (not the girl from the adams family tho)
 def aktueller():
     url = "https://api.openligadb.de/getcurrentgroup/bl1"
 
@@ -56,9 +60,47 @@ def aktueller():
     return spiel_aktuell
 
 # ToDo: consider using getlastchangedate/:leagueShortcut/:leagueSeason/:groupOrderId to check if a new update is available
-# you would need some place to store your last applied update to compare against
+# you would need some place to store your last applied update to compare against --> Done
 
+def checkUpdate():
+    # format the string and append the  current matchday to the url
+    url = "https://api.openligadb.de/getlastchangedate/bl1/2022/{}/".format(aktueller())
 
+    payload={}
+    headers = {
+        'Accept': 'text/plain'
+    }
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+    changedate = json.loads(response.text)
+    with SessionLocal() as session:
+        date = session.query(Update).get(1)
+        #check if a newer information are availabe and update database object if neccesary
+        if changedate.startswith("2023") and changedate != date.zeit:
+            date.zeit = changedate
+            session.commit()
+            print("time actualized")
+        else:
+            print("time is up to date")
+
+# if database is initialized this returns the last date of change in data
+def getChangeDate(spieltag):
+    # format the string and append the match to the url
+    url = "https://api.openligadb.de/getlastchangedate/bl1/2022/{}/".format(spieltag)
+
+    payload={}
+    headers = {
+        'Accept': 'text/plain'
+    }
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+    changedate = json.loads(response.text)
+    with SessionLocal() as session:
+        u = Update(zeit = changedate)
+        session.add(u)
+        session.commit()
+    
+# returns the result for a chosen macth day and updates the game schedule
 def getSpieltagResults(spieltag):
     # format the string and append the spieltag to the url
     url = "https://api.openligadb.de/getmatchdata/bl1/2022/{}/".format(
@@ -78,15 +120,19 @@ def getSpieltagResults(spieltag):
         finished = game['matchIsFinished']
         spieltag = game['group']
         spieltag = spieltag['groupOrderID']
+        started = 1
 
         try:
             tore = game['matchResults']
             tore = tore[0]
             heim_tore = tore['pointsTeam1']
             gast_tore = tore['pointsTeam2']
+
+        # some matches are played later on the same matchday so we throw an excpetion for them once again
         except IndexError:
             heim_tore = None
-            gast_tore = None    
+            gast_tore = None
+            started = 0    
         
         with SessionLocal() as session:
             #games are easily countable --> formula to get the games of the current match day
@@ -95,6 +141,10 @@ def getSpieltagResults(spieltag):
             spiel.finished = finished
             spiel.heim_tore = heim_tore
             spiel.gast_tore = gast_tore
+            # started = null --> match is long over
+            # started = 0 --> match is in current matchday and hasnt  started
+            # started = 1 --> match is in current matchday and has started
+            spiel.started = started
             session.commit()
             i = i + 1
 
@@ -156,17 +206,49 @@ def checkNewResultsSpieltag():
             getSpieltagResults(spieltag)
             klubs()
 
+def awardPoints(user):
+    with SessionLocal() as session:
+        spieltag = aktueller()-1
+        spiele = session.query(Spiele).filter(Spiele.spieltag==spieltag)
+        tipps = session.query(Tipps).filter(Tipps.spieltag==spieltag).filter(Tipps.user_id==user)
 
-def checkSpieltageThread():
-    import schedule
-    import time
+        tore_heim = []
+        tore_gast = []
+        tipp_heim = []
+        tipp_gast = []
 
-    # ToDo: adjust schedule???
-    #  function is now way faster so anything above a minute shoudl suffice
-    #  could also consider making this configurable through env variables?
-    # e.g. if TIPPBALL_UPDATE_INTERVAL == "minute"/"hour"/"day" etc
-    schedule.every().minute.do(checkNewResultsSpieltag)
-    while True:
-        schedule.run_pending()
-        time.sleep(60)  # wait one minute
-    # schedule.every().day.at("22:00").do(job)
+        for spiel in spiele:
+          tore_heim.append(spiel.heim_tore)
+          tore_gast.append(spiel.gast_tore)
+        for tipp in tipps:
+          tipp_heim.append(tipp.heim_tore)
+          tipp_gast.append(tipp.gast_tore)
+
+        points = 0
+        #Berechnung entfällt, wenn der vorherige Spieltag nicht getippt wurde
+        if len(tore_heim) == len(tipp_heim):
+            for i in range(9):
+                diff_spiel = tore_heim[i] - tore_gast[i]
+                diff_tipp = tipp_heim[i] - tipp_gast[i]
+                # 0 --> Unentschieden
+                # positiver Wert --> Sieg Heim
+                # negativer Wert --> Sieg Gast
+
+                #jeweils genaues ergebnis, differenz sieg heim/gast, tendenz sieg heim/gast, sonst 0 punkte
+                if tore_heim[i] == tipp_heim[i] and tore_gast[i] == tipp_gast[i]:
+                    points = points + 3
+                elif diff_spiel > 0 and diff_tipp > 0 and diff_tipp == diff_spiel:
+                    points = points + 2
+                elif diff_spiel < 0 and diff_tipp < 0 and diff_tipp == diff_spiel:
+                    points = points + 2
+                elif diff_spiel > 0 and diff_tipp > 0 and diff_tipp != diff_spiel:
+                    points = points + 1
+                elif diff_spiel < 0 and diff_tipp < 0 and diff_tipp != diff_spiel:
+                    points = points + 1
+                else:
+                    points = points + 0
+            reward = session.query(Register).get(user)
+            print(reward.username)
+            reward.points = reward.points + points
+            session.commit()
+                

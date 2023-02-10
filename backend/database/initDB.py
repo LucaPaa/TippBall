@@ -1,9 +1,11 @@
 from database.database import SessionLocal
 from models.models import Spiele, Klubs
-from database.functions import spieltage, klubs, aktueller, getSpieltagResults
+from database.functions import spieltage, klubs, aktueller, getSpieltagResults, getChangeDate, checkUpdate
 
 
 def init():
+    #check if time is up to date
+    checkUpdate()
     with SessionLocal() as session:
         # check if spiele database is empty
         if session.query(Spiele).count() == 0:
@@ -11,6 +13,11 @@ def init():
             # create new database
             spieltage()
             print("spieltage initialized")
+            print("initializing change date")
+            getChangeDate(aktueller()-1)
+            print("change date initialized")
+
+
         else:
             #update current matchday
             getSpieltagResults(aktueller())
