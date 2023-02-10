@@ -142,7 +142,9 @@ def review():
 @app.route('/score')
 @login_required
 def score():
-    return render_template('score.html', user = current_user)
+    with SessionLocal() as session:
+        users = session.query(Register).all()
+        return render_template('score.html', user = current_user, users= users)
 
 
 # Beinhaltet zunächst die Partien des aktuellen Spieltags
@@ -191,5 +193,5 @@ if __name__ == '__main__':
     checkUpdate()
 
     # Starten der Anwendung setz "debug=True" um im Debugger-Modus zu starten
-    app.run(debug=False)
+    app.run(debug=True)
     

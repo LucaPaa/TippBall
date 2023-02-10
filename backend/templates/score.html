@@ -2,15 +2,29 @@
 <head></head>
 
 {% block body %}
+
     <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
+   table, th, td {
+     border-collapse: collapse;
+     table-layout: fixed;
+     padding: 10px;
+   }
     </style>
+
     <div class="jumbotron">
-            <h1>Scoreboard</h1>
-            <img src="..\static\icons\logo.jpeg">
+        <h1>Scoreboard</h1>
+        <table>
+          <thead>
+            <th>Spieler</th>
+            <th>Punkte</th>
+          </thead>
+          {% for data in users %}
+            <tbody>
+              <td>{{data.username}}</td>
+              <td>{{data.points}}</td>
+            </tbody>
+          {% endfor %}
+        </table>
     </div>
 {% endblock %}
 
